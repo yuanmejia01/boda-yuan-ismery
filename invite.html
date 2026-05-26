@@ -66,13 +66,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
   object-position:center center;
 }
 
-/* Guest name — overlaid on the envelope face.
-   `bottom:28%` lands roughly on the address area of a
-   centred-square envelope inside a portrait frame.
-   Tweak this % if the video frame crops differently. */
+/* Guest name — overlaid on the envelope face */
 .e-info{
   position:absolute;
-  bottom:28%;left:0;right:0;
+  bottom:12%;left:0;right:0;
   text-align:center;z-index:5;
   pointer-events:none;
   transition:opacity .5s var(--ease);
@@ -398,11 +395,12 @@ footer{background:var(--ink);color:rgba(253,248,240,.5);padding:5rem 2rem 3rem;t
 <div id="env-screen">
   <div class="envelope" id="envelope">
 
-    <!-- Envelope opening video — paused on first frame until tapped -->
+    <!-- Envelope opening video — paused on first frame until tapped.
+         No poster: JS seeks to 0.001 s after load so the first
+         frame renders natively on mobile without a separate image. -->
     <video
       id="env-video"
       src="file.mp4"
-      poster="photos/envelope.avif"
       playsinline
       webkit-playsinline
       preload="auto"
@@ -811,6 +809,20 @@ const env       = document.getElementById('envelope');
 const envScreen = document.getElementById('env-screen');
 const envVideo  = document.getElementById('env-video');
 
+/* ── Force first frame to render on mobile ──────────────────────
+   Mobile browsers won't paint a video frame until the user
+   interacts. Seeking to 0.001 s after the data is available
+   tricks the browser into decoding and displaying frame 0,
+   so the closed envelope is visible immediately — no poster
+   image needed, no seam between static image and video.    */
+function showFirstFrame(){
+  if(envVideo.readyState >= 2){   /* HAVE_CURRENT_DATA */
+    envVideo.currentTime = 0.001;
+  }
+}
+envVideo.addEventListener('loadeddata', showFirstFrame, {once:true});
+showFirstFrame(); /* no-op if not ready yet; event handles it */
+
 function openEnvelope(){
   if(opened) return;
   opened = true;
@@ -820,7 +832,8 @@ function openEnvelope(){
   document.getElementById('e-hint').style.opacity = '0';
   document.getElementById('e-info').style.opacity = '0';
 
-  /* Play the envelope opening video */
+  /* Rewind to start, then play the envelope opening video */
+  envVideo.currentTime = 0;
   envVideo.play().catch(()=>{
     /* If autoplay blocked, skip straight to invitation */
     revealInvitation();
