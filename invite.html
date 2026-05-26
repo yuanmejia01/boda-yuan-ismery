@@ -37,28 +37,30 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
 ============================================================ */
 #env-screen{
   position:fixed;inset:0;z-index:600;
-  display:flex;align-items:center;justify-content:center;
   background:#1a1510;
   transition:opacity 1.4s var(--ease), visibility 1.4s var(--ease);
-  overflow:hidden;
 }
 #env-screen.hide{opacity:0;visibility:hidden;pointer-events:none;}
 
 /* ---- Envelope fills the screen ---- */
+/* position:absolute inside a position:fixed parent is the
+   most reliable pattern across iOS Safari + Android Chrome */
 .envelope{
-  position:fixed;
+  position:absolute;
   inset:0;
   cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color:transparent;
+  overflow:hidden;
 }
 
-/* The opening video — cover-fills the screen.
-   The mp4 frame is rectangular but the envelope content
-   is square in the centre; the dark margin areas match
-   the #env-screen background (#1a1510) so cropping them
-   is invisible. Result: envelope fills full screen. */
+/* Video fills the envelope container.
+   object-fit:cover crops the rectangular mp4 frame edges
+   (which are the same dark colour as the background) so
+   the square envelope content fills the screen seamlessly. */
 #env-video{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   display:block;
@@ -66,7 +68,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
   object-position:center center;
 }
 
-/* Guest name — overlaid on the envelope face */
+/* Guest name — overlaid on the lower portion of the envelope face */
 .e-info{
   position:absolute;
   bottom:12%;left:0;right:0;
@@ -95,10 +97,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
   display:block;
 }
 
-/* Tap hint — fixed at bottom of screen */
+/* Tap hint — pinned to bottom of env-screen */
 .e-hint{
-  position:fixed;bottom:2.5rem;left:0;right:0;
-  text-align:center;z-index:5;
+  position:absolute;bottom:2.5rem;left:0;right:0;
+  text-align:center;z-index:10;
   font-family:var(--sans);font-size:.58rem;letter-spacing:.55em;text-transform:uppercase;
   color:rgba(253,248,240,.45);
   animation:hintPulse 2.8s ease-in-out infinite;
@@ -162,8 +164,8 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
 #inv-hero-vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,transparent 28%,rgba(0,0,0,.52) 100%);pointer-events:none;}
 #inv-hero-content{
   position:absolute;inset:0;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;text-align:center;
-  color:var(--bone);padding:2rem;z-index:3;
+  align-items:center;justify-content:flex-start;text-align:center;
+  color:var(--bone);padding:max(4rem,8vh) 2rem 2rem;z-index:3;
 }
 .ih-to{font-family:var(--sans);font-size:.68rem;letter-spacing:.5em;text-transform:uppercase;color:rgba(253,248,240,.6);margin-bottom:1.6rem;}
 .ih-guest{font-family:var(--serif);font-style:italic;font-weight:300;font-size:clamp(2.6rem,7vw,5.5rem);line-height:1;color:var(--bone);margin-bottom:1.8rem;}
