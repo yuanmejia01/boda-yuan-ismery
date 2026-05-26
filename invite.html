@@ -37,64 +37,74 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9000;
 ============================================================ */
 #env-screen{
   position:fixed;inset:0;z-index:600;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   background:#1a1510;
   transition:opacity 1.4s var(--ease), visibility 1.4s var(--ease);
+  overflow:hidden;
 }
 #env-screen.hide{opacity:0;visibility:hidden;pointer-events:none;}
 
-/* ---- Envelope video wrapper ---- */
+/* ---- Envelope fills the screen ---- */
 .envelope{
   position:relative;
-  width:min(380px, 92vw);
+  /* Desktop: constrain by width. Mobile: fill height */
+  height:100vh;
+  width:auto;
+  max-width:100vw;
   cursor:pointer;
   user-select:none;
   -webkit-tap-highlight-color:transparent;
+  display:flex;align-items:center;justify-content:center;
 }
 
 /* The opening video */
 #env-video{
-  width:100%;height:auto;display:block;
-  border-radius:2px;
+  height:100vh;
+  width:auto;
+  max-width:100vw;
+  display:block;
+  object-fit:contain;
 }
 
-/* Guest name — sits below the video, over a subtle strip */
+/* Guest name */
 .e-info{
   position:absolute;
-  bottom:12%;left:0;right:0;
+  bottom:14%;left:0;right:0;
   text-align:center;z-index:5;
   pointer-events:none;
   transition:opacity .5s var(--ease);
   padding:0 2rem;
 }
 .e-info .e-label{
-  font-family:var(--sans);font-size:clamp(.52rem,1.1vw,.65rem);
+  font-family:var(--sans);font-size:clamp(.52rem,1.8vw,.68rem);
   font-weight:400;letter-spacing:.5em;text-transform:uppercase;
   color:rgba(139,107,60,.9);margin-bottom:.5rem;
   display:block;
 }
 .e-info .e-name{
   font-family:var(--serif);font-style:italic;
-  font-size:clamp(1.4rem,4vw,2.2rem);
+  font-size:clamp(1.5rem,5vw,2.4rem);
   color:#2a2018;letter-spacing:.02em;line-height:1.2;
   display:block;
-  text-shadow:0 2px 16px rgba(253,248,240,.95),0 1px 4px rgba(253,248,240,1);
+  text-shadow:0 2px 20px rgba(253,248,240,1),0 1px 6px rgba(253,248,240,1);
 }
 .e-info .e-seats{
-  font-family:var(--sans);font-size:clamp(.58rem,1.3vw,.7rem);
+  font-family:var(--sans);font-size:clamp(.6rem,1.8vw,.72rem);
   font-weight:400;letter-spacing:.32em;text-transform:uppercase;
-  color:rgba(107,90,72,.85);margin-top:.45rem;
+  color:rgba(107,90,72,.85);margin-top:.5rem;
   display:block;
 }
 
-/* Tap hint */
+/* Tap hint — fixed at bottom of screen */
 .e-hint{
-  margin-top:2rem;
-  font-family:var(--sans);font-size:.6rem;letter-spacing:.55em;text-transform:uppercase;
-  color:rgba(253,248,240,.4);
+  position:fixed;bottom:2.5rem;left:0;right:0;
+  text-align:center;z-index:5;
+  font-family:var(--sans);font-size:.58rem;letter-spacing:.55em;text-transform:uppercase;
+  color:rgba(253,248,240,.45);
   animation:hintPulse 2.8s ease-in-out infinite;
+  pointer-events:none;
 }
-@keyframes hintPulse{0%,100%{opacity:.25;}50%{opacity:.7;}}
+@keyframes hintPulse{0%,100%{opacity:.2;}50%{opacity:.65;}}
 
 /* ============================================================
    MUSIC TOGGLE BUTTON (floating)
@@ -389,6 +399,7 @@ footer{background:var(--ink);color:rgba(253,248,240,.5);padding:5rem 2rem 3rem;t
     <video
       id="env-video"
       src="file.mp4"
+      poster="photos/envelope.avif"
       playsinline
       webkit-playsinline
       preload="auto"
