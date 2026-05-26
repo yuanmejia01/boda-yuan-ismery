@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/invite.html", "destination": "/invite.html" },
+    { "source": "/admin.html",  "destination": "/admin.html"  },
+    { "source": "/index.html",  "destination": "/index.html"  }
+  ],
+  "cleanUrls": false
+}

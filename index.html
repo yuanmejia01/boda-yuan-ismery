@@ -521,7 +521,6 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
     <a href="#story">Historia</a>
     <a href="#gallery">Galería</a>
     <a href="#details">Detalles</a>
-    <a href="#seats">Tu Mesa</a>
     <a href="#messages">Mensajes</a>
   </div>
   <button class="nav-toggle" id="nav-toggle" aria-label="Menú">
@@ -533,7 +532,6 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
   <a href="#story">Historia</a>
   <a href="#gallery">Galería</a>
   <a href="#details">Detalles</a>
-  <a href="#seats">Tu Mesa</a>
   <a href="#messages">Mensajes</a>
 </div>
 
@@ -656,28 +654,12 @@ footer::before{content:'';position:absolute;top:0;left:50%;transform:translateX(
 
 
 
-<!-- ============================
-     SEAT FINDER
-============================ -->
-<section id="seats">
-  <span class="chapter" style="color:rgba(253,248,240,.3);">05 / Tu Lugar</span>
-  <div class="seats-wrap">
-    <p class="eyebrow c rv">Asignación de Mesas</p>
-    <h2 class="title rv">Encuentra <em>tu mesa</em>.</h2>
-    <p class="body-t rv" style="margin-top:1.4rem;">Escribe tu nombre completo y te diremos exactamente dónde sentarte.</p>
-    <div class="seat-in-wrap rv" style="position:relative;">
-      <input type="text" id="seat-input" placeholder="Tu nombre completo" autocomplete="off"/>
-      <div id="seat-ac" class="ac-list"></div>
-    </div>
-    <div id="seat-res" class="seat-res" role="status" aria-live="polite"></div>
-  </div>
-</section>
 
 <!-- ============================
      MESSAGES
 ============================ -->
 <section id="messages">
-  <span class="chapter">06 / Mensajes</span>
+  <span class="chapter">05 / Mensajes</span>
   <div class="wrap">
     <div style="text-align:center;">
       <p class="eyebrow c rv">Libro de Deseos</p>
@@ -829,37 +811,6 @@ function esc(s){ const d=document.createElement('div');d.textContent=s;return d.
   document.addEventListener('keydown',e=>{ if(!lb.classList.contains('on')) return;if(e.key==='Escape') close();if(e.key==='ArrowRight') next();if(e.key==='ArrowLeft') prev(); });
 })();
 
-/* ============================
-   SEAT FINDER — carga invitados desde Supabase
-============================ */
-(async function(){
-  const input = document.getElementById('seat-input');
-  const res   = document.getElementById('seat-res');
-  const ac    = document.getElementById('seat-ac');
-
-  /* Load all guests once into memory */
-  const { data: list } = await sb.from('guests').select('name,seats,table_name').order('name');
-  const guests = (list||[]).map(g=>({...g, table: g.table_name}));
-
-  function renderAC(q){
-    ac.innerHTML='';
-    if(!q){ac.style.display='none';return;}
-    const matches=guests.filter(g=>g.name.toLowerCase().includes(q.toLowerCase())).slice(0,6);
-    if(!matches.length){ac.style.display='none';return;}
-    matches.forEach(g=>{ const el=document.createElement('div');el.className='ac-item';el.textContent=g.name;el.addEventListener('click',()=>{ input.value=g.name;ac.style.display='none';find(); });ac.appendChild(el); });
-    ac.style.display='block';
-  }
-  function find(){
-    const q=input.value.trim().toLowerCase();ac.style.display='none';
-    if(!q){res.textContent='Escribe tu nombre.';res.classList.add('nf','on');return;}
-    const g=guests.find(g=>g.name.toLowerCase()===q);
-    if(g){ res.innerHTML=`Bienvenido/a, ${esc(g.name)}. ${g.seats} ${g.seats===1?'asiento reservado':'asientos reservados'}.<span class="tnum">${esc(g.table)}</span>`;res.classList.remove('nf');res.classList.add('on'); }
-    else{ res.textContent='No encontramos tu nombre. Contáctanos directamente.';res.classList.add('nf','on'); }
-  }
-  input.addEventListener('input',e=>renderAC(e.target.value));
-  input.addEventListener('keydown',e=>{ if(e.key==='Enter') find(); });
-  document.addEventListener('click',e=>{ if(!input.contains(e.target)&&!ac.contains(e.target)) ac.style.display='none'; });
-})();
 
 /* ============================
    MESSAGES — carga desde Supabase y guarda nuevos
